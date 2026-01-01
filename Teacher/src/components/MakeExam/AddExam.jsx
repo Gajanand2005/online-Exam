@@ -64,28 +64,48 @@ const AddExam = () => {
                   className="border mt-1 p-2 rounded-md w-full"
                 />
               </div>
+            
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  className="!mt-4 !bg-green-500 !text-white hover:!bg-green-600"
+                >
+                 Submit
+                </Button>
+             
 
+              
+            </div>
+
+            {/* Card 2 (Empty / Add New) */}
+           <div className="w-[280px] p-5 border rounded-lg shadow-sm">
+              <div className="mb-3">
+                <label className="font-semibold">Exam Name :Hindi</label>
+               
+              </div>
+
+               <div className="mb-3">
+                <label className="font-semibold">class :12</label>
+               
+              </div>
+               <div className="mb-3">
+                <label className="font-semibold">marks :120</label>
+               
+              </div>
+               <div className="mb-3">
+                <label className="font-semibold">Date : 12/23/2025</label>
+                
+              </div>
               <Link to="/make-exam">
                 <Button
                   fullWidth
                   variant="outlined"
-                  className="!mt-4"
+                  className="!mt-4 !bg-blue-500 !text-white !px-4 !py-2 !rounded-md hover:!bg-blue-600 !mt-5"
                 >
                   Add
                 </Button>
               </Link>
             </div>
-
-            {/* Card 2 (Empty / Add New) */}
-            <div className="w-[280px] p-5 border rounded-lg  flex items-center justify-center">
-              <Button
-                variant="outlined"
-                startIcon={<IoMdAdd />}
-              >
-                New Exam
-              </Button>
-            </div>
-
           </div>
         </div>
       </div>

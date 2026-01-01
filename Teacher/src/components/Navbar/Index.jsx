@@ -37,7 +37,9 @@ const Navbar = () => {
         <Link to="/teacher-login">
       <Button className='!text-black !bg-zinc-300 hover:!bg-indigo-500/50 rounded-md !text-[15px] '>Teacher Login</Button>
       </Link>
+      <Link to="/principal-login">
       <Button className='!text-black !bg-zinc-300 hover:!bg-indigo-500/50 rounded-md !text-[15px]'>Principal Login</Button>
+      </Link>
       </div>
       </div>
     </div>
