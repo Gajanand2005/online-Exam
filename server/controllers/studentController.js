@@ -165,7 +165,7 @@ export const submitExam = async (req, res) => {
       });
     }
 
-    // 🔐 Class validation
+    // � Class validation
     if (exam.class !== student.class) {
       return res.status(403).json({
         success: false,
@@ -217,6 +217,13 @@ export const submitExam = async (req, res) => {
       resultId: result._id,
     });
   } catch (error) {
+    // Handle E11000 duplicate key error (already submitted)
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: "You have already submitted this exam",
+      });
+    }
     res.status(500).json({
       success: false,
       message: "Exam submission failed",

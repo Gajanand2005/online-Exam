@@ -57,6 +57,10 @@ export const submitExam = async (req, res) => {
 
     res.status(201).json({ success: true, result });
   } catch (err) {
+    // Handle E11000 duplicate key error (already submitted)
+    if (err.code === 11000) {
+      return res.status(400).json({ success: false, error: "You have already submitted this exam" });
+    }
     res.status(500).json({ success: false, error: err.message });
   }
 };

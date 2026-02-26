@@ -12,10 +12,15 @@ const App = () => {
       <Suspense fallback={<h2 style={{ textAlign: "center" }}>Loading...</h2>}>
         <Routes>
           <Route path="/" element={<Navbar />} />
+          {/* direct student entry should show login page */}
+          <Route path="/student" element={<Navigate to="/" replace />} />
+          {/* redirect any deeper student path back to root so the login renders */}
+          <Route path="/student/*" element={<Navigate to="/" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/exam/:examId" element={<ExamFormat />} />
           <Route path="/results" element={<Results />} />
           <Route path="/ExamFormat" element={<Navigate to="/dashboard" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

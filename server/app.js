@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
 import connectDB from "./config/db.js";
 import { applySecurity } from "./middleware/securityMiddleware.js";
 
@@ -8,6 +9,7 @@ import authRoutes from "./routes/authRoutes.js";
 import examRoutes from "./routes/examRoutes.js";
 import questionRoutes from "./routes/questionRoutes.js";
 import resultRoutes from "./routes/resultRoutes.js";
+import teacherRoutes from "./routes/teacherRoutes.js";
 import Exam from "./models/examModel.js";
 
 dotenv.config();
@@ -41,15 +43,34 @@ app.use("/api/auth", authRoutes);
 app.use("/api/exams", examRoutes);
 app.use("/api/questions", questionRoutes);
 app.use("/api/results", resultRoutes);
+app.use("/api/teacher", teacherRoutes);
 
 // Temporary fallback endpoint to create exam directly (safe-parsing)
+// Try to use authenticated user, fallback to null (will use middleware error if validation fails)
 app.post('/api/exams/create2', async (req, res) => {
   try {
+    // Check for auth token in headers
+    const authHeader = req.headers.authorization;
+    let createdByUserId = null;
+    
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      // Token exists, try to verify and get user ID
+      try {
+        const token = authHeader.split(' ')[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        createdByUserId = decoded.id;
+      } catch (tokenErr) {
+        console.warn('Token verification failed:', tokenErr.message);
+        // Continue without auth, will likely fail validation if createdBy required
+      }
+    }
+    
     const body = req.body || {};
     const examName = body.examName || body.title;
     if (!examName || !body.subject || !body.class || !body.duration || !body.totalMarks) {
       return res.status(400).json({ success: false, error: 'Missing required fields' });
     }
+    
     const exam = await Exam.create({
       examName,
       subject: body.subject,
@@ -60,11 +81,14 @@ app.post('/api/exams/create2', async (req, res) => {
       totalMarks: Number(body.totalMarks),
       questions: Array.isArray(body.questions) ? body.questions : [],
       isActive: typeof body.isActive === 'boolean' ? body.isActive : true,
-      createdBy: null,
+      createdBy: createdByUserId,
     });
     res.status(201).json({ success: true, exam });
   } catch (err) {
-    console.error('create2 error', err);
+    console.error('create2 error:', err.message);
+    if (err.name === 'ValidationError' && err.errors?.createdBy) {
+      return res.status(401).json({ success: false, error: 'Authentication required. Please login first.' });
+    }
     res.status(500).json({ success: false, error: err.message });
   }
 });
