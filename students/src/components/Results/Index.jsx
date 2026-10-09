@@ -6,16 +6,11 @@ const Results = () => {
   const navigate = useNavigate();
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
+  const [user] = useState(() => JSON.parse(localStorage.getItem("studentUser") || "null"));
 
   useEffect(() => {
-    const u = localStorage.getItem("studentUser");
-    if (!u) {
-      navigate("/");
-      return;
-    }
-    setUser(JSON.parse(u));
-  }, [navigate]);
+    if (!user) navigate("/");
+  }, [user, navigate]);
 
   useEffect(() => {
     if (!user) return;
@@ -60,27 +55,41 @@ const Results = () => {
         ) : results.length === 0 ? (
           <p>No results yet.</p>
         ) : (
-          <div className="bg-white rounded-xl shadow overflow-hidden">
+          <div className="bg-white rounded-xl shadow overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-100">
                 <tr>
                   <th className="text-left p-3">Exam</th>
-                  <th className="text-left p-3">Subject</th>
+                  <th className="text-left p-3 hidden sm:table-cell">Subject</th>
                   <th className="text-left p-3">Marks</th>
-                  <th className="text-left p-3">Percentage</th>
-                  <th className="text-left p-3">Date</th>
+                  <th className="text-left p-3">%</th>
+                  <th className="text-left p-3">Rank</th>
+                  <th className="text-left p-3 hidden sm:table-cell">Date</th>
                 </tr>
               </thead>
               <tbody>
                 {results.map((r) => (
                   <tr key={r._id} className="border-t">
-                    <td className="p-3">{r.exam?.examName || r.examId?.title}</td>
-                    <td className="p-3">{r.exam?.subject || r.examId?.subject}</td>
-                    <td className="p-3">
-                      {r.score || r.marksObtained || 0} / {r.totalMarks}
+                    <td className="p-3">{r.exam?.examName || r.examSnapshot?.examName || "(deleted exam)"}</td>
+                    <td className="p-3 hidden sm:table-cell">{r.exam?.subject || r.examSnapshot?.subject}</td>
+                    <td className="p-3 whitespace-nowrap">
+                      {r.score ?? 0} / {r.totalMarks}
                     </td>
                     <td className="p-3">{r.percentage}%</td>
-                    <td className="p-3">
+                    <td className="p-3 whitespace-nowrap">
+                      {r.exam ? (
+                        <button
+                          onClick={() => navigate(`/leaderboard/${r.exam._id}`)}
+                          className="text-blue-700 underline"
+                          aria-label={`Rank ${r.rank} of ${r.participants}, view leaderboard`}
+                        >
+                          {r.rank} / {r.participants}
+                        </button>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
+                    <td className="p-3 hidden sm:table-cell">
                       {r.submittedAt
                         ? new Date(r.submittedAt).toLocaleDateString()
                         : "-"}

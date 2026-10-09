@@ -25,13 +25,13 @@ router.post(
 );
 router.get("/exam/:examId", authenticate, getQuestionsByExam);
 router.put(
-  "/:id",
+  "/:examId/:questionId",
   authenticate,
   authorize("teacher", "principal"),
   updateQuestion
 );
 router.delete(
-  "/:id",
+  "/:examId/:questionId",
   authenticate,
   authorize("teacher", "principal"),
   deleteQuestion

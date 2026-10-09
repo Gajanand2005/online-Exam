@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const answerSubSchema = new mongoose.Schema(
   {
     questionIndex: { type: Number, required: true },
+    questionId: { type: mongoose.Schema.Types.ObjectId },
     selectedOption: { type: Number, required: true }, // index-based
     isCorrect: { type: Boolean, default: false },
     marksObtained: { type: Number, default: 0 },
@@ -26,6 +27,7 @@ const resultSchema = new mongoose.Schema(
       section: String,
       totalMarks: Number,
     },
+    startedAt: { type: Date },
     submittedAt: { type: Date, default: Date.now },
   },
   { timestamps: true }

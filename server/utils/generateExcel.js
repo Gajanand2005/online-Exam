@@ -14,6 +14,7 @@ export async function exportResultsToExcel(results) {
       { width: 15 },
       { width: 12 },
       { width: 12 },
+      { width: 8 },
     ],
   });
 
@@ -28,6 +29,7 @@ export async function exportResultsToExcel(results) {
     "Obtained",
     "Percentage",
     "Submitted At",
+    "Rank",
   ]);
   sheet.getRow(1).font = { bold: true };
 
@@ -41,12 +43,13 @@ export async function exportResultsToExcel(results) {
       student.section || "-",
       student.rollNo || "-",
       exam.examName || exam.title || "-",
-      r.totalMarks || r.totalMarks || "-",
+      r.totalMarks || "-",
       r.score || r.marksObtained || 0,
       (r.percentage || 0) + "%",
       r.submittedAt
         ? new Date(r.submittedAt).toLocaleString()
         : "-",
+      r.rank ?? "-",
     ]);
   });
 

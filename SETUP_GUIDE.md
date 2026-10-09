@@ -5,8 +5,8 @@
 Your system is already running! All three applications are live:
 
 - **Backend API**: http://localhost:8000
-- **Student App**: http://localhost:5173
-- **Teacher Portal**: http://localhost:5174
+- **Student App**: http://localhost:5174
+- **Teacher Portal**: http://localhost:5175
 
 ---
 
@@ -22,26 +22,17 @@ Students log in **WITHOUT** a password. They provide:
 
 **Note**: Same roll no + class automatically recognizes the student if name/father name match.
 
-### 👨‍🏫 Teacher Login
-**Default Teacher Account:**
-- Username: `teacher`
-- Password: `teacher123`
-
-**Test Teacher Account:**
-- Username: `testshivamUser`
-- Password: `testshivam123`
-
-### 🔐 Principal Login
-**Default Principal Account:**
-- Username: `principal`
-- Password: `principal123`
+### 👨‍🏫 Teacher and 🔐 Principal Login
+Fixed accounts, set in `server/.env` (`TEACHER_EMAIL` / `TEACHER_PASSWORD`, `PRINCIPAL_USERNAME` / `PRINCIPAL_PASSWORD`); created/updated on every server start, no sign-up.
+- Teacher: email = `TEACHER_EMAIL`
+- Principal: username = `PRINCIPAL_USERNAME`
 
 ---
 
 ## 📱 Complete Student Workflow
 
 ### 1️⃣ **Login**
-- Navigate to http://localhost:5173
+- Navigate to http://localhost:5174
 - Fill: Name, Father Name, Class, Section, Roll No
 - Click Login → Redirected to Dashboard
 
@@ -82,9 +73,8 @@ Students log in **WITHOUT** a password. They provide:
 ## 👨‍🏫 Complete Teacher Workflow
 
 ### 1️⃣ **Login**
-- Navigate to http://localhost:5174/teacher-login
-- Enter: Username & Password
-- Default: `teacher` / `teacher123`
+- Navigate to http://localhost:5175/teacher-login
+- Enter: the teacher email and password from `server/.env`
 - Redirect to exam dashboard
 
 ### 2️⃣ **Create Exam**
@@ -139,9 +129,8 @@ Students log in **WITHOUT** a password. They provide:
 ## 🔐 Complete Principal Workflow
 
 ### 1️⃣ **Login**
-- Navigate to http://localhost:5174/principal-login
-- Enter: Username & Password
-- Default: `principal` / `principal123`
+- Navigate to http://localhost:5175/principal-login
+- Enter: the principal username and password from `server/.env`
 - Access principal dashboard
 
 ### 2️⃣ **View All Results**
@@ -255,8 +244,11 @@ DELETE /api/exams/:id              # Delete exam
 GET  /api/questions/exam/:examId   # Get questions for exam
 POST /api/questions                # Add single question
 POST /api/questions/bulk           # Add multiple questions
-PUT  /api/questions/:id            # Update question
-DELETE /api/questions/:id          # Delete question
+PUT  /api/questions/:examId/:questionId        # Update question
+DELETE /api/questions/:examId/:questionId      # Delete question
+POST /api/attempts/:examId/start               # Start/resume exam (student)
+PUT  /api/attempts/:examId/answers             # Autosave answers (student)
+GET  /api/results/leaderboard/:examId          # Ranked results
 ```
 
 ### Results
@@ -291,12 +283,12 @@ CLOUDINARY_PROJECT_FOLDER=school_exam_system
 ## 🎨 Frontend Configuration
 
 ### Student App (Vite)
-- **Port**: 5173
+- **Port**: 5174
 - **Config**: `students/vite.config.js`
 - **API URL**: Auto-detects from `VITE_API_URL` or defaults to `http://localhost:8000/api`
 
 ### Teacher App (Vite)
-- **Port**: 5174
+- **Port**: 5175
 - **Config**: `Teacher/vite.config.js`
 - **API URL**: Auto-detects from `VITE_API_URL` or defaults to `http://localhost:8000/api`
 
@@ -394,7 +386,7 @@ npm run build
 For issues or questions, check:
 1. `.env` configuration
 2. MongoDB Atlas connection
-3. Port availability (8000, 5173, 5174)
+3. Port availability (8000, 5174, 5175)
 4. Browser console for errors (F12)
 5. Terminal logs for backend errors
 

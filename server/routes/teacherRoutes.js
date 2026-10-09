@@ -1,10 +1,10 @@
 import express from "express";
 import { protectTeacher } from "../middleware/teacherAuthMiddleware.js";
-import { createExam, getClassResults, exportResults, loginTeacher, registerTeacher, getResultsByExam } from "../controllers/teacherController.js";
+import { createExam, getClassResults, exportResults, loginTeacher, getResultsByExam } from "../controllers/teacherController.js";
 
 const router = express.Router();
 
-router.post("/register", registerTeacher);
+// No sign-up: teacher/principal logins are fixed in .env (see config/accounts.js).
 router.post("/login", loginTeacher );
 router.post("/exam/create", protectTeacher, createExam);
 router.get("/results/:className", protectTeacher, getClassResults);

@@ -5,8 +5,8 @@
 | Service | URL | Status | Port |
 |---------|-----|--------|------|
 | Backend API | http://localhost:8000 | ✅ Running | 8000 |
-| Student App | http://localhost:5173 | ✅ Running | 5173 |
-| Teacher Portal | http://localhost:5174 | ✅ Running | 5174 |
+| Student App | http://localhost:5174 | ✅ Running | 5174 |
+| Teacher Portal | http://localhost:5175 | ✅ Running | 5175 |
 | MongoDB | Online (Atlas) | ✅ Connected | - |
 
 ---
@@ -19,31 +19,17 @@ No credentials needed!
 Just provide: Name, Father Name, Class, Section, Roll No
 ```
 
-### Teacher
-```
-Username: teacher
-Password: teacher123
-```
-
-### Alternative Teacher
-```
-Username: testshivamUser
-Password: testshivam123
-```
-
-### Principal
-```
-Username: principal
-Password: principal123
-```
+### Teacher and Principal
+Fixed logins, set in `server/.env` (`TEACHER_EMAIL` / `TEACHER_PASSWORD`, `PRINCIPAL_USERNAME` / `PRINCIPAL_PASSWORD`); created/updated on every server start, no sign-up. The teacher logs in with
+`TEACHER_EMAIL`; the principal with `PRINCIPAL_USERNAME`.
 
 ---
 
 ## 🎯 Main URLs
 
-**Student**: http://localhost:5173
-**Teacher Login**: http://localhost:5174/teacher-login
-**Principal Login**: http://localhost:5174/principal-login
+**Student**: http://localhost:5174
+**Teacher Login**: http://localhost:5175/teacher-login
+**Principal Login**: http://localhost:5175/principal-login
 **API Health**: http://localhost:8000/api/health
 
 ---
@@ -97,20 +83,20 @@ npm start           # Start on port 8000
 ```bash
 cd online-Exam/students
 npm install         # First time only
-npm run dev         # Start on port 5173
+npm run dev         # Start on port 5174
 ```
 
 **Teacher Frontend**:
 ```bash
 cd online-Exam/Teacher
 npm install         # First time only
-npm run dev         # Start on port 5174
+npm run dev         # Start on port 5175
 ```
 
 ### Seed Database
 ```bash
 cd online-Exam/server
-node seed.js        # Create default teacher & principal
+node seed.js        # Create/update teacher & principal from .env (npm start also does this)
 ```
 
 ---
@@ -160,22 +146,36 @@ DELETE /api/exams/:id
 # Get exam questions
 GET /api/questions/exam/:examId
 
-# Add question
+# Add question — options as strings + correctAnswer index,
+# or as [{ text, isCorrect }] with exactly one isCorrect
 POST /api/questions
-Body: { examId, questionText, options, marks }
+Body: { examId, questionText, options, correctAnswer, marks }
 
-# Update question
-PUT /api/questions/:id
+# Update question (omitted fields are kept)
+PUT /api/questions/:examId/:questionId
 
 # Delete question
-DELETE /api/questions/:id
+DELETE /api/questions/:examId/:questionId
 ```
 
 ### Results
 ```bash
 # Submit exam
+# Start/resume (student): questions without answer key, saved answers, server deadline
+POST /api/attempts/:examId/start
+# Autosave (student)
+PUT /api/attempts/:examId/answers
+Body: { answers: [{ questionId, selectedOption }] }
+
 POST /api/results/submit
-Body: { examId, answers: [{ questionId, selectedOptionIndex }] }
+Body: { examId, answers: [{ questionId, selectedOption }] }
+# Answers arriving after the deadline (+30 s grace) are ignored; the last autosave counts.
+# Attempts left open past the deadline are submitted automatically.
+
+# Leaderboard (students: top 10 + own rank, after submitting)
+GET /api/results/leaderboard/:examId
+# Graded against every question in the exam; unanswered questions score 0.
+# Students never receive correctAnswer from any endpoint.
 
 # Get student results
 GET /api/results/student
@@ -301,7 +301,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 5173 // or 5174 for teacher
+    port: 5174 // or 5175 for teacher
   }
 })
 ```
@@ -389,7 +389,7 @@ Roll No: "001"
 | Database connection error | Check MongoDB URI in .env |
 | Image upload fails | Verify Cloudinary credentials in .env |
 | Token errors | Clear localStorage and re-login |
-| Port already in use | Kill process: `lsof -t -i:5173 \| xargs kill -9` |
+| Port already in use | Kill process: `lsof -t -i:5174 \| xargs kill -9` |
 
 ---
 

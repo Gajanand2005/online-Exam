@@ -6,6 +6,7 @@ import {
   getResultsByClass,
   getAllResults,
   exportToExcel,
+  getLeaderboard,
 } from "../controllers/resultController.js";
 import { authenticate } from "../middleware/authMiddleware.js";
 import { authorize } from "../middleware/roleMiddleware.js";
@@ -20,6 +21,7 @@ router.get(
   authorize("teacher", "principal"),
   getResultsByExam
 );
+router.get("/leaderboard/:examId", authenticate, getLeaderboard);
 router.get(
   "/class",
   authenticate,

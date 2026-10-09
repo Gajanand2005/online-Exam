@@ -2,22 +2,26 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
 import api from "../../api/axios";
+import { examSlot, formatDateTime, formatTime } from "../../utils/datetime";
+
+const SLOT_BADGE = {
+  upcoming: "bg-blue-100 text-blue-800",
+  live: "bg-green-100 text-green-800",
+  ended: "bg-gray-200 text-gray-700",
+};
 
 const Exam = () => {
   const navigate = useNavigate();
   const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
+  const [user] = useState(() => {
+    const u = localStorage.getItem("teacherUser");
+    return localStorage.getItem("teacherToken") && u ? JSON.parse(u) : null;
+  });
 
   useEffect(() => {
-    const token = localStorage.getItem("teacherToken");
-    const u = localStorage.getItem("teacherUser");
-    if (!token || !u) {
-      navigate("/teacher-login");
-      return;
-    }
-    setUser(JSON.parse(u));
-  }, [navigate]);
+    if (!user) navigate("/teacher-login");
+  }, [user, navigate]);
 
   useEffect(() => {
     if (!user) return;
@@ -29,7 +33,7 @@ const Exam = () => {
   }, [user]);
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this exam and all its questions?")) return;
+    if (!window.confirm("Delete this exam, its questions and all student results?")) return;
     try {
       await api.delete(`/exams/${id}`);
       setExams((prev) => prev.filter((e) => e._id !== id));
@@ -69,19 +73,48 @@ const Exam = () => {
           <p className="text-gray-600">No exams yet. Create one.</p>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {exams.map((exam) => (
+            {exams.map((exam) => {
+              const slot = examSlot(exam);
+              const chapters = [...new Set((exam.questions || []).map((q) => q.chapter).filter(Boolean))];
+              return (
               <div
                 key={exam._id}
                 className="w-full p-5 border rounded-lg shadow-sm bg-white"
               >
-                <div className="mb-1 font-semibold">{exam.examName || exam.title}</div>
+                <div className="mb-1 font-semibold flex items-start justify-between gap-2">
+                  <span>{exam.examName || exam.title}</span>
+                  {slot && (
+                    <span className={`shrink-0 text-xs font-medium px-2 py-0.5 rounded ${SLOT_BADGE[slot.state]}`}>
+                      {slot.state === "live" ? "Live" : slot.state === "upcoming" ? "Upcoming" : "Ended"}
+                    </span>
+                  )}
+                </div>
                 <div className="mb-1 text-sm text-gray-600">{exam.subject}</div>
-                <div className="mb-1 text-sm">Class: {exam.class}-{exam.section}</div>
-                <div className="mb-2 text-sm">Marks: {exam.totalMarks} • {exam.duration} min</div>
+                <div className="mb-1 text-sm">
+                  Class: {exam.class}-{exam.section || "All sections"}
+                  {exam.isActive === false && <span className="ml-2 text-red-600">(inactive)</span>}
+                </div>
+                <div className="mb-1 text-sm">
+                  Marks: {exam.totalMarks} • {exam.duration} min • {exam.questions?.length || 0} question
+                  {exam.questions?.length === 1 ? "" : "s"}
+                </div>
+                <div className="mb-1 text-sm text-gray-700">
+                  {slot
+                    ? `${formatDateTime(slot.start)} – ${formatTime(slot.end)}`
+                    : "No start time set (edit to schedule)"}
+                </div>
+                {chapters.length > 0 && (
+                  <div className="mb-2 text-sm text-gray-600">Chapters: {chapters.join(", ")}</div>
+                )}
                 <div className="flex flex-wrap gap-2">
                   <Link to={`/add-questions/${exam._id}`}>
                     <Button size="small" className="!bg-blue-400 !text-white">
-                      Add Questions
+                      Questions
+                    </Button>
+                  </Link>
+                  <Link to={`/edit-exam/${exam._id}`}>
+                    <Button size="small" className="!bg-amber-500 !text-white">
+                      Edit
                     </Button>
                   </Link>
                   <Link to={`/show-result/${exam._id}`}>
@@ -98,7 +131,8 @@ const Exam = () => {
                   </Button>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

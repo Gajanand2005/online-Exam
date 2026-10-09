@@ -33,7 +33,7 @@ const Login = () => {
   };
 
   return (
-    <div className="mt-50 flex items-center justify-center">
+    <div className="mt-16 sm:mt-50 px-4 flex items-center justify-center">
       <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl p-8">
         <h2 className="text-2xl font-bold text-center text-gray-800">Principal Login</h2>
         <p className="text-center text-gray-500 mt-1">Welcome back! Please login</p>
@@ -42,6 +42,10 @@ const Login = () => {
             <label className="text-sm text-gray-600">Username</label>
             <input
               type="text"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              autoComplete="username"
               placeholder="Enter username"
               className="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300"
               value={username}

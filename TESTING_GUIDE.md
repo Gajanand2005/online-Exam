@@ -3,8 +3,8 @@
 ## 🔧 Pre-flight Checks
 
 - [x] Backend server running on port 8000
-- [x] Student frontend running on port 5173
-- [x] Teacher frontend running on port 5174
+- [x] Student frontend running on port 5174
+- [x] Teacher frontend running on port 5175
 - [x] MongoDB connected
 - [x] All dependencies installed
 - [x] Environment variables configured
@@ -17,7 +17,7 @@
 
 #### Step 1: Student Login
 ```
-1. Open http://localhost:5173
+1. Open http://localhost:5174
 2. Fill student login form:
    - Name: "Raj Kumar"
    - Father Name: "Ramesh Kumar"
@@ -74,10 +74,10 @@
 
 #### Step 1: Teacher Login
 ```
-1. Open http://localhost:5174/teacher-login
+1. Open http://localhost:5175/teacher-login
 2. Enter credentials:
-   - Username: "teacher"
-   - Password: "teacher123"
+   - Email: the TEACHER_EMAIL from server/.env
+   - Password: the TEACHER_PASSWORD from server/.env
 3. Click Login
 4. Expected: Redirect to exam management page
 ```
@@ -143,10 +143,10 @@
 
 #### Step 1: Principal Login
 ```
-1. Open http://localhost:5174/principal-login
+1. Open http://localhost:5175/principal-login
 2. Enter credentials:
-   - Username: "principal"
-   - Password: "principal123"
+   - Username: the PRINCIPAL_USERNAME from server/.env
+   - Password: the PRINCIPAL_PASSWORD from server/.env
 3. Click Login
 4. Expected: Redirect to all results dashboard
 ```

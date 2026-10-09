@@ -5,60 +5,6 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 /**
- * 🧑‍🏫 Teacher Register
- */
-export const registerTeacher = async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
-
-    // 1️⃣ Check all fields
-    if (!name || !email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields are required",
-      });
-    }
-
-    // 2️⃣ Check existing teacher
-    const existingTeacher = await Teacher.findOne({ email });
-    if (existingTeacher) {
-      return res.status(409).json({
-        success: false,
-        message: "Teacher already exists",
-      });
-    }
-
-    // 3️⃣ Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    // 4️⃣ Create teacher
-    const teacher = await Teacher.create({
-      name,
-      email,
-      password: hashedPassword,
-    });
-
-    res.status(201).json({
-      success: true,
-      message: "Teacher registered successfully",
-      teacher: {
-        id: teacher._id,
-        name: teacher.name,
-        email: teacher.email,
-        role: teacher.role,
-      },
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Registration failed",
-      error: error.message,
-    });
-  }
-};
-
-/**
  * 🔑 Teacher Login
  */
 export const loginTeacher = async (req, res) => {
@@ -74,7 +20,7 @@ export const loginTeacher = async (req, res) => {
     }
 
     // 2️⃣ Find teacher
-    const teacher = await Teacher.findOne({ email });
+    const teacher = await Teacher.findOne({ email: String(email).toLowerCase() });
     if (!teacher) {
       return res.status(404).json({
         success: false,

@@ -5,6 +5,7 @@ const Navbar = lazy(() => import("./components/Navbar/Index"));
 const Dashboard = lazy(() => import("./components/Dashboard/Index"));
 const ExamFormat = lazy(() => import("./components/ExamFormat/Index"));
 const Results = lazy(() => import("./components/Results/Index"));
+const Leaderboard = lazy(() => import("./components/Leaderboard/Index"));
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/exam/:examId" element={<ExamFormat />} />
           <Route path="/results" element={<Results />} />
+          <Route path="/leaderboard/:examId" element={<Leaderboard />} />
           <Route path="/ExamFormat" element={<Navigate to="/dashboard" replace />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

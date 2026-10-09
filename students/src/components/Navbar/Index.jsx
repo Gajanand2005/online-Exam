@@ -1,6 +1,6 @@
 import React from 'react'
 import logo from '../../assets/logo.jpeg'
-import { motion } from "motion/react"
+import { motion as Motion } from "motion/react"
 import Login from '../Login/Index.jsx'
 
 
@@ -12,7 +12,7 @@ const Navbar = () => {
 
         {/* Logo Section */}
         <div className="logo flex items-center justify-center mt-5">
-          <motion.img
+          <Motion.img
             src={logo}
             alt="School Logo"
             className="h-32"   

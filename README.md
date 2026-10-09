@@ -13,24 +13,27 @@
 | Service | URL | Status |
 |---------|-----|--------|
 | Backend API | http://localhost:8000 | ✅ Running |
-| Student Portal | http://localhost:5173 | ✅ Running |
-| Teacher Portal | http://localhost:5174 | ✅ Running |
+| Student Portal | http://localhost:5174 | ✅ Running |
+| Teacher Portal | http://localhost:5175 | ✅ Running |
 
 ## 🎯 Key Features
 
 ### 👨‍🎓 Student Portal
 - **Simple Login**: No password needed! Just provide name, class, section, roll no
 - **Browse Exams**: See all exams available for their class/section
-- **Take Exams**: MCQ-based interface with timer and question navigation
-- **View Results**: Check marks, percentage, and submission dates
-- **Auto-Grading**: Instant result calculation after submission
+- **Scheduled Papers**: See when each paper opens, with a countdown; entry only during its slot
+- **Take Exams**: MCQ interface with Next/Previous, a question palette and a timer kept in sync with the server
+- **Auto-Save & Resume**: Every answer is saved as it's clicked; a refresh or lost connection resumes where it left off
+- **Auto-Submit**: When time runs out the paper is submitted, even if the tab was closed
+- **Secure Questions**: Questions are only sent once the paper opens; the answer key never leaves the server
+- **Results & Rank**: Marks, percentage, rank among classmates and a top-10 leaderboard per exam
 
 ### 👨‍🏫 Teacher Portal  
-- **Create Exams**: Define exam details with custom duration and total marks
-- **Manage Questions**: Add MCQ questions with image support
-- **View Results**: See student performance and analytics
-- **Export**: Download results as professional Excel files
-- **Edit/Delete**: Manage exams as needed
+- **Fixed Login**: One teacher account; email and password are set in `server/.env` (no sign-up)
+- **Create/Edit/Delete Exams**: Class, section, subject, paper start time and duration (fixed slot: everyone's paper ends at start + duration)
+- **Manage Questions**: MCQ questions tagged by chapter, filter by chapter; changes save automatically
+- **View Results**: Ranked results per exam with average
+- **Export**: Download results (with rank) as Excel files
 
 ### 🔐 Principal Dashboard
 - **View All Results**: Access results from all classes and exams
@@ -75,8 +78,13 @@ cd online-Exam
 ```bash
 cd server
 npm install
-npm start
+cp .env.example .env   # then fill in your own values (incl. teacher/principal logins)
+npm start              # also creates/updates the teacher and principal logins
+node seed.js --demo    # optional, local/demo DBs only: sample class 10 students, exams and results
 # Runs on http://localhost:8000
+
+# With the server running, in another terminal:
+npm test               # end-to-end API checks (creates and cleans up its own exam)
 ```
 
 **3. Start Student App:**
@@ -84,7 +92,7 @@ npm start
 cd students
 npm install
 npm run dev
-# Runs on http://localhost:5173
+# Runs on http://localhost:5174
 ```
 
 **4. Start Teacher App:**
@@ -92,14 +100,14 @@ npm run dev
 cd Teacher
 npm install
 npm run dev
-# Runs on http://localhost:5174
+# Runs on http://localhost:5175
 ```
 
 **All running! Open URLs above in your browser.**
 
 ---
 
-## 👥 Demo Accounts
+## 👥 Logins
 
 ### Student Login
 ```
@@ -107,23 +115,17 @@ No password needed!
 Just enter: Name, Father Name, Class (10), Section (A), Roll No (001)
 ```
 
-### Teacher
+### Teacher and Principal
+Fixed accounts, no sign-up. Set them in `server/.env`; the server creates or updates
+them every time it starts (passwords need at least 8 characters):
+```env
+TEACHER_EMAIL=teacher@yourschool.example     # teacher logs in with this email
+TEACHER_PASSWORD=...
+PRINCIPAL_USERNAME=principal
+PRINCIPAL_PASSWORD=...
 ```
-Username: teacher
-Password: teacher123
-```
-
-### Alternative Teacher
-```
-Username: testshivamUser
-Password: testshivam123
-```
-
-### Principal
-```
-Username: principal
-Password: principal123
-```
+To change a password, edit `.env` and restart the server. After 10 failed logins
+from one IP, staff login is blocked for 15 minutes.
 
 ---
 
@@ -204,12 +206,20 @@ DELETE /api/exams/:id              # Delete exam
 ```bash
 GET  /api/questions/exam/:id       # Get questions
 POST /api/questions                # Add question
-PUT  /api/questions/:id            # Update
-DELETE /api/questions/:id          # Delete
+PUT  /api/questions/:examId/:questionId        # Update (teacher/principal)
+DELETE /api/questions/:examId/:questionId      # Delete
+# Students can't call these; they receive questions via /api/attempts
+```
+
+### Attempts (students)
+```bash
+POST /api/attempts/:examId/start   # Start or resume: questions (no answer key) + server deadline
+PUT  /api/attempts/:examId/answers # Autosave { answers: [{ questionId, selectedOption }] }
 ```
 
 ### Results
 ```bash
+GET  /api/results/leaderboard/:examId  # Ranked results (students: top 10 + own rank, after submitting)
 POST /api/results/submit           # Submit exam
 GET  /api/results/student          # My results
 GET  /api/results/exam/:id         # Exam results
@@ -306,10 +316,17 @@ cd ../Teacher && npm run build # Build teacher app
 
 ## 📄 Environment Variables
 
+See `server/.env.example` for the full list with comments.
+
 ```env
-JWT_SECRET=jasonwebtokensecret@123
+JWT_SECRET=a-long-random-string
 PORT=8000
 MONGO_URI=mongodb+srv://user:pass@cluster.mongodb.net/online_exam
+TEACHER_EMAIL=teacher@yourschool.example
+TEACHER_PASSWORD=change-this-password
+PRINCIPAL_USERNAME=principal
+PRINCIPAL_PASSWORD=change-this-password-too
+# optional: CORS_ORIGIN, RATE_LIMIT_PER_MINUTE (default 1000), TRUST_PROXY=1 behind a proxy
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_key
 CLOUDINARY_API_SECRET=your_secret
@@ -352,7 +369,7 @@ MIT License - See LICENSE file
 2. **Student portal:** `cd students` → `npm install` → `npm run dev`. Set `VITE_API_URL=http://localhost:8000/api` in `.env` if needed.
 3. **Teacher portal:** `cd Teacher` → `npm install` → `npm run dev`. Set `VITE_API_URL=http://localhost:8000/api` in `.env` if needed.
 
-Default logins (after `node seed.js` in server): Teacher `teacher` / `teacher123`, Principal `principal` / `principal123`, Test user `testshivamUser` / `testshivam123`. Students log in with Name, Father Name, Class, Section, Roll No.
+Teacher and principal logins come from `server/.env` (see Logins above). Students log in with Name, Father Name, Class, Section, Roll No.
 
 ## 🚀 Deploying your own bot <a name = "deployment"></a>
 
