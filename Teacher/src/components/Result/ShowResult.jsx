@@ -72,14 +72,23 @@ const ShowResult = () => {
         )}
         <div className="w-full border mt-4" />
         <div className="flex justify-between items-center mt-4 flex-wrap gap-2">
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleExportExcel}
-            className="!bg-green-600"
-          >
-            Download Excel
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleExportExcel}
+              className="!bg-green-600"
+            >
+              Download Excel
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => navigate(`/leaderboard/${examId}`)}
+              className="!text-gray-800"
+            >
+              View Leaderboard
+            </Button>
+          </div>
           <Button onClick={() => navigate("/exam")}>Back to Exams</Button>
         </div>
         {loading ? (

@@ -173,17 +173,11 @@ const ExamFormat = () => {
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
           <h2 className="text-2xl font-bold text-green-700">Exam Submitted</h2>
           {result.late && <p className="mt-2 text-gray-600">Time was up, so your saved answers were submitted.</p>}
-          <p className="mt-4 text-4xl font-bold">
+          {/* <p className="mt-4 text-4xl font-bold">
             {result.score}/{result.totalMarks}
           </p>
-          <p className="text-gray-600">{result.percentage}%</p>
-          <button
-            onClick={() => navigate(`/leaderboard/${examId}`)}
-            className="mt-6 w-full py-2 border border-blue-600 text-blue-700 rounded-lg font-semibold"
-          >
-            View Leaderboard
-          </button>
-          <button onClick={() => navigate("/dashboard")} className="mt-3 w-full py-2 bg-blue-600 text-white rounded-lg font-semibold">
+          <p className="text-gray-600">{result.percentage}%</p> */}
+          <button onClick={() => navigate("/dashboard")} className="mt-6 w-full py-2 bg-blue-600 text-white rounded-lg font-semibold">
             Back to Dashboard
           </button>
         </div>
@@ -199,7 +193,7 @@ const ExamFormat = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-8 select-none" onCopy={blockCopy} onCut={blockCopy} onContextMenu={blockCopy}>
-      <header className="sticky top-0 z-10 bg-white border-b px-4 py-2">
+      <header className="sticky top-0 z-10 bg-white border-b px-4 py-2">git 
         <div className="max-w-3xl mx-auto flex items-center justify-between gap-3 flex-wrap">
           <div className="min-w-0">
             <h1 className="text-lg font-bold truncate">{exam.examName}</h1>

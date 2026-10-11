@@ -31,14 +31,14 @@ connectDB().then(async () => {
 
 // apply security headers and rate limiting
 const app = express();
-// apply security headers and rate limiting
-applySecurity(app);
 
 // Restrict CORS via env var if provided, e.g. CORS_ORIGIN=https://student.example.com,https://teacher.example.com
 const allowedOrigin = process.env.CORS_ORIGIN
   ? process.env.CORS_ORIGIN.split(",").map((o) => o.trim())
   : "*";
 app.use(cors({ origin: allowedOrigin }));
+// Handle preflight requests before rate limiting so blocked logins still receive CORS headers.
+applySecurity(app);
 // parse JSON and keep a raw copy for debugging (without consuming the stream)
 app.use(express.json({ verify: (req, res, buf) => { req.rawBody = buf && buf.toString(); } }));
 app.use(express.urlencoded({ extended: true }));

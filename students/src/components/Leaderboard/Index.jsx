@@ -53,9 +53,6 @@ const Leaderboard = () => {
         <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
           <h1 className="text-xl font-bold">Leaderboard{data && `: ${data.exam.examName}`}</h1>
           <div className="flex gap-2">
-            <button onClick={() => navigate("/results")} className="px-4 py-2 bg-gray-600 text-white rounded-lg">
-              My Results
-            </button>
             <button onClick={() => navigate("/dashboard")} className="px-4 py-2 bg-gray-500 text-white rounded-lg">
               Dashboard
             </button>

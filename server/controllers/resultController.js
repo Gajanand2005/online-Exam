@@ -50,6 +50,9 @@ export const submitExam = async (req, res) => {
 
 export const getStudentResults = async (req, res) => {
   try {
+    if (req.user.role !== "student") {
+      return res.status(403).json({ success: false, error: "Student results are hidden from this role." });
+    }
     await finalizeExpiredAttempts({ student: req.user.id });
     const results = await Result.find({ student: req.user.id })
       .populate("exam", "examName subject class section totalMarks duration")
@@ -87,6 +90,12 @@ export const getResultsByExam = async (req, res) => {
 // only after they have submitted.
 export const getLeaderboard = async (req, res) => {
   try {
+    if (req.user.role === "student") {
+      return res.status(403).json({ success: false, error: "Leaderboard access is limited to teachers and principals." });
+    }
+    if (!['teacher', 'principal'].includes(req.user.role)) {
+      return res.status(403).json({ success: false, error: "Access restricted to teachers and principals." });
+    }
     const { examId } = req.params;
     if (!mongoose.isValidObjectId(examId))
       return res.status(404).json({ success: false, error: "Exam not found" });
@@ -100,6 +109,7 @@ export const getLeaderboard = async (req, res) => {
       rank: r.rank,
       studentId: r.student?._id,
       name: r.student?.name ?? "(deleted student)",
+      class: r.student?.class,
       rollNo: r.student?.rollNo,
       section: r.student?.section,
       score: r.score,

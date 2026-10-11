@@ -251,13 +251,14 @@ test("submit grades every question once; unanswered score zero; one attempt only
   assert.equal((await call("POST", `/attempts/${exams.open}/start`, { token: students.a })).status, 409);
 });
 
-test("leaderboard ranks by score, ties share a rank, students see it after submitting", async () => {
+test("teachers can view leaderboard while students are blocked from results and leaderboard", async () => {
   const take = async (token, answers) => {
     await call("POST", `/attempts/${exams.open}/start`, { token });
     return call("POST", "/results/submit", { token, body: { examId: exams.open, answers } });
   };
   await call("POST", `/attempts/${exams.open}/start`, { token: students.e });
   assert.equal((await call("GET", `/results/leaderboard/${exams.open}`, { token: students.e })).status, 403);
+  assert.equal((await call("GET", "/results/student", { token: students.a })).status, 403);
 
   await take(students.d, [{ questionId: qIds[0], selectedOption: 1 }, { questionId: qIds[1], selectedOption: 0 }]); // 3
   await call("POST", "/results/submit", {
@@ -265,26 +266,20 @@ test("leaderboard ranks by score, ties share a rank, students see it after submi
     body: { examId: exams.open, answers: [{ questionId: qIds[0], selectedOption: 1 }] },
   }); // 1
 
-  const board = await call("GET", `/results/leaderboard/${exams.open}`, { token: students.e });
-  assert.equal(board.status, 200);
-  assert.equal(board.data.participants, 3);
-  assert.deepEqual(board.data.leaderboard.map((r) => r.rank), [1, 2, 2]);
-  assert.equal(board.data.leaderboard[0].score, 3);
-  assert.equal(board.data.me.rank, 2);
-  assert.ok(board.data.me.isMe);
-  assert.ok(board.data.leaderboard.every((r) => !("studentId" in r) && !("fatherName" in r)));
-
-  const history = await call("GET", "/results/student", { token: students.a });
-  const mine = history.data.results.find((r) => r.exam._id === exams.open);
-  assert.equal(mine.rank, 2);
-  assert.equal(mine.participants, 3);
+  assert.equal((await call("GET", `/results/leaderboard/${exams.open}`, { token: students.e })).status, 403);
 
   const byExam = await call("GET", `/results/exam/${exams.open}`, { token: teacher });
   assert.deepEqual(byExam.data.results.map((r) => r.rank), [1, 2, 2]);
   assert.equal(byExam.data.results[0].student.rollNo, "D"); // roll numbers are stored uppercase
 
-  const full = await call("GET", `/results/leaderboard/${exams.open}`, { token: principal });
+  const full = await call("GET", `/results/leaderboard/${exams.open}`, { token: teacher });
+  assert.equal(full.status, 200);
   assert.equal(full.data.leaderboard.length, 3);
+  assert.deepEqual(full.data.leaderboard.map((r) => r.rank), [1, 2, 2]);
+
+  const principalBoard = await call("GET", `/results/leaderboard/${exams.open}`, { token: principal });
+  assert.equal(principalBoard.status, 200);
+  assert.equal(principalBoard.data.leaderboard.length, 3);
   assert.equal((await call("GET", "/results", { token: teacher })).status, 403);
 });
 

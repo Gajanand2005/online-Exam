@@ -1,5 +1,5 @@
 import React from 'react'
-import logo from '../../assets/logo.jpeg'
+import logo2 from '../../assets/logo2.png'
 import { motion as Motion } from "motion/react"
 import Login from '../Login/Index.jsx'
 
@@ -13,7 +13,7 @@ const Navbar = () => {
         {/* Logo Section */}
         <div className="logo flex items-center justify-center mt-5">
           <Motion.img
-            src={logo}
+            src={logo2}
             alt="School Logo"
             className="h-32"   
             initial={{ opacity: 0, scale: 0 }}
@@ -29,7 +29,7 @@ const Navbar = () => {
         {/* Title */}
         <div className="nav-items flex items-center justify-center capitalize">
           <h1 className="mt-5 font-bold text-[20px] text-center">
-            New Era SR Sec School Kund, Rewari
+            Online Exam 
           </h1>
         </div>
         <Login />

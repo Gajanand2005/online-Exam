@@ -14,14 +14,19 @@ import { authorize } from "../middleware/roleMiddleware.js";
 const router = express.Router();
 
 router.post("/submit", authenticate, authorize("student"), submitExam);
-router.get("/student", authenticate, authorize("student"), getStudentResults);
+router.get("/student", authenticate, authorize("teacher", "principal"), getStudentResults);
 router.get(
   "/exam/:examId",
   authenticate,
   authorize("teacher", "principal"),
   getResultsByExam
 );
-router.get("/leaderboard/:examId", authenticate, getLeaderboard);
+router.get(
+  "/leaderboard/:examId",
+  authenticate,
+  authorize("teacher", "principal"),
+  getLeaderboard
+);
 router.get(
   "/class",
   authenticate,

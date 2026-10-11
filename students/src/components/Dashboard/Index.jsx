@@ -105,9 +105,6 @@ const Dashboard = () => {
             Welcome, {user.name} (Class {user.class}-{user.section})
           </span>
           <div className="flex gap-2">
-            <button onClick={() => navigate("/results")} className="px-4 py-2 bg-gray-600 text-white rounded-lg">
-              My Results
-            </button>
             <button onClick={handleLogout} className="px-4 py-2 bg-gray-500 text-white rounded-lg">
               Logout
             </button>

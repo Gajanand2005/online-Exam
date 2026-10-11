@@ -65,13 +65,20 @@ const Login = () => {
             />
           </div>
           {error && <p className="text-red-600 text-sm">{error}</p>}
-          <div className="text-center">
+          <div className="flex flex-col items-center gap-3">
             <Button
               type="submit"
               disabled={loading}
               className="!text-black !bg-zinc-300 hover:!bg-indigo-500/50 rounded-md !text-[15px]"
             >
               {loading ? "Logging in..." : "Login"}
+            </Button>
+            <Button
+              type="button"
+              onClick={() => navigate("/")}
+              className="!text-gray-700 !bg-transparent hover:!bg-gray-100 rounded-md !text-[14px] underline underline-offset-2"
+            >
+              Back to Login Page
             </Button>
           </div>
         </form>

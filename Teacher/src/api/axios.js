@@ -11,4 +11,23 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 && !error.config?.url?.includes("/auth/")) {
+      let user;
+      try {
+        user = JSON.parse(localStorage.getItem("teacherUser") || "null");
+      } catch {
+        user = null;
+      }
+      localStorage.removeItem("teacherToken");
+      localStorage.removeItem("teacherUser");
+      const loginPath = user?.role === "principal" ? "/principal-login" : "/teacher-login";
+      if (window.location.pathname !== loginPath) window.location.assign(loginPath);
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;

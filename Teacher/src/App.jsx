@@ -11,6 +11,7 @@ const ViewExam = lazy(() => import("./components/View Exam/Index"));
 const ViewExam1 = lazy(() => import("./components/View Exam/ViewExam1"));
 const Result = lazy(() => import("./components/Result"));
 const ShowResult = lazy(() => import("./components/Result/ShowResult"));
+const TeacherLeaderboard = lazy(() => import("./components/Result/TeacherLeaderboard"));
 const Login = lazy(() => import("./components/PrincipalLogin/Index"));
 const AllResult = lazy(() => import("./components/SeeAllResult"));
 const SeeResult = lazy(() => import("./components/SeeAllResult/SeeResult"));
@@ -42,6 +43,7 @@ const App = () => {
           <Route path="/show" element={<Result />} />
           <Route path="/show-result" element={<ShowResult />} />
           <Route path="/show-result/:examId" element={<ShowResult />} />
+          <Route path="/leaderboard/:examId" element={<TeacherLeaderboard />} />
           <Route path="/see-all-result" element={<AllResult />} />
           <Route path="/see-result" element={<SeeResult />} />
           <Route path="/see-exam" element={<SeeEXam />} />
