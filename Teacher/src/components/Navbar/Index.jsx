@@ -1,5 +1,5 @@
 import React from 'react'
-import logo2 from '../../assets/logo2.png'
+import logo2 from '../../assets/logo.jpeg'
 import { motion as Motion } from "motion/react"
 import Button from '@mui/material/Button';
 import { Link } from "react-router-dom";
